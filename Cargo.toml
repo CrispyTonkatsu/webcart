@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 kiss3d = "0.47.0"
+rand = "0.10.3"

@@ -9,7 +9,8 @@
         packages = with pkgs; [
           rustc
           cargo
-          clippy
+          rustfmt
+          rustPackages.clippy
           rust-analyzer
 
           tombi
