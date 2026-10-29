@@ -1,0 +1,5 @@
+[toolchain]
+channel = "stable"
+profile = "default"
+components = ["cargo", "rust-src", "rust-analyzer", "rustfmt", "clippy"]
+targets = ["wasm32-unknown-unknown"]

@@ -1,12 +1,26 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+
+    rust-overlay.url = "github:oxalica/rust-overlay";
   };
 
-  outputs = { nixpkgs, ... }: {
-    devShells = builtins.mapAttrs (
-      system: pkgs:
+  outputs =
+    {
+      nixpkgs,
+      flake-utils,
+      rust-overlay,
+      ...
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
       let
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ (import rust-overlay) ];
+        };
+
         waylandPackages = with pkgs; [
           wayland
           wayland-protocols
@@ -16,15 +30,13 @@
 
           libxkbcommon
         ];
+
+        rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./toolchain.toml;
       in
       {
-        default = pkgs.mkShell {
+        devShells.default = pkgs.mkShell {
           packages = with pkgs; [
-            rustc
-            cargo
-            rustfmt
-            rustPackages.clippy
-            rust-analyzer
+            rustToolchain
 
             texlab
             texliveFull
@@ -37,8 +49,6 @@
           LD_LIBRARY_PATH =
             if pkgs.stdenv.hostPlatform.isLinux then pkgs.lib.makeLibraryPath waylandPackages else [ ];
         };
-
       }
-    ) nixpkgs.legacyPackages;
-  };
+    );
 }
