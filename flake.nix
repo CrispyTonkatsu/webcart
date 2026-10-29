@@ -30,9 +30,12 @@
             texliveFull
 
             tombi
+
+            wasm-pack
           ];
 
-          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath waylandPackages;
+          LD_LIBRARY_PATH =
+            if pkgs.stdenv.hostPlatform.isLinux then pkgs.lib.makeLibraryPath waylandPackages else [ ];
         };
 
       }
