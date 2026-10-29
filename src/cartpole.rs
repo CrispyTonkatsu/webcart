@@ -1,7 +1,10 @@
 use kiss3d::{
+    event::{Action, Key},
     glamx::{Quat, Vec3},
     scene::SceneNode3d,
+    window::Window,
 };
+use rand::random_range;
 
 #[derive(Default)]
 pub struct CartPole {
@@ -37,7 +40,37 @@ impl CartPole {
             .set_position(Vec3::new(0.0, -0.1, 0.0));
     }
 
-    pub fn update(&mut self, delta_time: f64) {
+    pub fn input_update(&mut self, window: &Window) {
+        if window.get_key(Key::Space) == Action::Press {
+            self.omega += random_range(-1.5..1.5);
+        }
+    }
+
+    pub fn controller_update(&mut self) {
+        let position_gain = {
+            let error = self.pos;
+            let der_error = self.vel;
+
+            let p = 0.3;
+            let d = 0.5;
+
+            p * error + d * der_error
+        };
+
+        let angle_gain = {
+            let error = self.theta;
+            let der_error = self.omega;
+
+            let p = 30.0;
+            let d = 5.0;
+
+            -p * error - d * der_error
+        };
+
+        self.force = position_gain + angle_gain
+    }
+
+    pub fn dynamics_update(&mut self, delta_time: f64) {
         // Just for better readability
         let cos = f64::cos(self.theta);
         let sin = f64::sin(self.theta);

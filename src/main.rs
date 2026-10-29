@@ -76,7 +76,9 @@ async fn main() {
         let delta_time = now.duration_since(last_time).as_secs_f64();
         last_time = now;
 
-        cart.update(delta_time);
+        cart.input_update(&window);
+        cart.controller_update();
+        cart.dynamics_update(delta_time);
         cart.update_visuals();
     }
 }
