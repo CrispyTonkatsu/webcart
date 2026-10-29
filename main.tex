@@ -1,0 +1,133 @@
+\documentclass{article}
+\usepackage{amsmath}
+
+\newcommand{\pfrac}[2]{\frac{\partial #1}{\partial #2}}
+
+\begin{document}
+\title{Cart pole equations of motion}
+\author{Edgar Jose Donoso Mansilla}
+\date{}
+\maketitle
+
+\section{Variables}
+Simplifying the problem by treating it as 2 point masses where $c$ is the point on the cart and then $p$ is at the other end of the pole. The masses are at a ditance $l$ of each other.
+
+The problem needs 2 generalized variables:
+\begin{enumerate}
+	\item The horizontal displacement of the cart: $x$
+	\item The angle to the up axis of the pole: $\theta$
+\end{enumerate}
+
+\section{Kinematics}
+Finding the position of the mass at the end of the pole $(x_p, y_p)$:
+
+\begin{equation}
+	x_p = x - l \sin(\theta)
+\end{equation}
+
+\begin{equation}
+	y_p = l \cos(\theta)
+\end{equation}
+
+Now finding the first order derivative for the kinetic speed:
+
+\begin{equation}
+	\dot{x_p} = \dot{x} - l \dot{\theta} \cos(\theta)
+\end{equation}
+
+\begin{equation}
+	\dot{y_p} = -l \dot{\theta} \sin(\theta)
+\end{equation}
+
+\section{Lagrangian}
+The kinetic energy for the cart is:
+\begin{align*}
+	T & = \frac{1}{2}m_c \dot{x}^2 + \frac{1}{2}m_p (\dot{x_p}^2 + \dot{y_p}^2) \\
+	T & = \frac{1}{2}m_c \dot{x}^2
+	+ \frac{1}{2}m_p (
+	\dot{x}^2 - 2\dot{x}l\dot{\theta}\cos(\theta) + l^2 \dot{\theta}^2 \cos^2(\theta)
+	+ l^2 \dot{\theta}^2 \sin^2 (\theta)
+	)
+\end{align*}
+
+Simplifying with trigonometric identities:
+\begin{equation}
+	T = \frac{1}{2}m_c \dot{x}^2
+	+ \frac{1}{2}m_p (
+	\dot{x}^2 - 2\dot{x}l\dot{\theta}\cos(\theta) + l^2 \dot{\theta}^2
+	)
+\end{equation}
+
+The potential energy for the cart is:
+\begin{align*}
+	U & = mgy_p
+\end{align*}
+
+\begin{equation}
+	U = m_pgl\cos(\theta)
+\end{equation}
+
+This leads to the final lagrangian of:
+\begin{align*}
+	L & = T - U                    \\
+	L & = \frac{1}{2}m_c \dot{x}^2
+	+ \frac{1}{2}m_p (
+	\dot{x}^2 - 2\dot{x}l\dot{\theta}\cos(\theta) + l^2 \dot{\theta}^2
+	)
+	- m_pgl\cos(\theta)
+\end{align*}
+
+Which simplifies to the following:
+\begin{equation}
+	L = \frac{1}{2}(m_c + m_p)\dot{x}^2
+	- m_p\dot{x}l\dot{\theta}\cos(\theta) + \frac{1}{2} m_p l^2 \dot{\theta}^2
+	- m_pgl\cos(\theta)
+\end{equation}
+
+\section{Euler Lagrange Equation}
+To optimize the energy ledger we have made, we can now use the Euler-Lagrange equation to get the final equation of motion for both $x$ and $\theta$.
+
+With respect to $x$:
+$$
+	\frac{d}{dt} \pfrac{L}{\dot{x}} - \pfrac{L}{x} = \mathbf{F}(t)
+$$
+
+\begin{align}
+	\pfrac{L}{\dot{x}}              & = (m_c + m_p)\dot{x} - m_p l \dot{\theta}\cos(\theta)                                    \\
+	\frac{d}{dt} \pfrac{L}{\dot{x}} & = (m_c + m_p)\ddot{x} - m_p l \ddot{\theta}\cos(\theta) + m_pl\dot{\theta}^2\sin(\theta) \\
+	\pfrac{L}{x}                    & = 0
+\end{align}
+
+\begin{equation}
+	(m_c + m_p)\ddot{x} - m_pl\ddot{\theta}\cos(\theta) + m_pl\dot{\theta}^2\sin(\theta) = \mathbf{F}(t)
+\end{equation}
+
+With respect to $\theta$:
+$$
+	\frac{d}{dt} \pfrac{L}{\dot{\theta}} - \pfrac{L}{\theta} = 0
+$$
+
+\begin{align}
+	\pfrac{L}{\dot{\theta}}              & = -m_p\dot{x}l\cos(\theta) + m_p l^2 \dot{\theta}                                         \\
+	\frac{d}{dt} \pfrac{L}{\dot{\theta}} & = -m_p\ddot{x}l\cos(\theta) + m_p\dot{x}l\dot{\theta}\sin(\theta) + m_p l^2 \ddot(\theta) \\
+	\pfrac{L}{\theta}                    & = m_p\dot{x}l\dot{\theta}\sin(\theta) + m_p g l \sin{\theta}
+\end{align}
+
+\begin{equation} \label{ThetaMotion}
+	-m_p\ddot{x}l\cos(\theta) + m_p\dot{x}l\dot{\theta}\sin(\theta) + m_p l^2 \ddot(\theta) + m_p\dot{x}l\dot{\theta}\sin(\theta) + m_p g l \sin{\theta} = 0
+\end{equation}
+
+Equation \eqref{ThetaMotion} can be simplified by dividing the mass out as it is not being influenced by any forces:
+\begin{equation}
+	-\ddot{x}l\cos(\theta) + \dot{x}l\dot{\theta}\sin(\theta) + l^2 \ddot(\theta) + \dot{x}l\dot{\theta}\sin(\theta) + g l \sin{\theta} = 0
+\end{equation}
+
+\section{Summary}
+To summarize, the equations of motion with respect to displacement $x$ and angle $\theta$ are:
+
+\begin{align}
+	(m_c + m_p)\ddot{x} - m_pl\ddot{\theta}\cos(\theta) + m_pl\dot{\theta}^2\sin(\theta) = \mathbf{F}(t) \\
+	-\ddot{x}l\cos(\theta) + \dot{x}l\dot{\theta}\sin(\theta) + l^2 \ddot(\theta) + \dot{x}l\dot{\theta}\sin(\theta) + g l \sin{\theta} = 0
+\end{align}
+
+\end{document}
