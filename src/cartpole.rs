@@ -1,4 +1,5 @@
 use kiss3d::{
+    color::Color,
     event::{Action, Key},
     glamx::{Quat, Vec3},
     scene::SceneNode3d,
@@ -29,15 +30,18 @@ impl CartPole {
     pub fn enter_scene(&mut self, scene: &mut SceneNode3d) {
         self.pendulum = scene.add_group();
 
-        self.pendulum.add_sphere(0.1);
+        self.pendulum
+            .add_sphere(0.05)
+            .set_color(Color::new(0.96, 0.98, 0.19, 1.0));
 
         self.pendulum
             .add_cube(0.05, self.length as f32, 0.05)
-            .set_position(Vec3::new(0.0, (self.length / 2.0) as f32, 0.0));
+            .set_position(Vec3::new(0.0, (self.length / 2.0) as f32, 0.0))
+            .set_color(Color::new(0.84, 0.25, 0.27, 1.0));
 
         self.cart = scene
             .add_cube(0.5, 0.2, 0.4)
-            .set_position(Vec3::new(0.0, -0.1, 0.0));
+            .set_color(Color::new(0.14, 0.17, 0.2, 1.0));
     }
 
     pub fn input_update(&mut self, window: &Window) {
@@ -98,6 +102,6 @@ impl CartPole {
             .set_rotation(Quat::from_rotation_z(self.theta as f32));
 
         self.cart
-            .set_position(Vec3::new(self.pos as f32, -0.2, 0.0));
+            .set_position(Vec3::new(self.pos as f32, -0.1, 0.0));
     }
 }

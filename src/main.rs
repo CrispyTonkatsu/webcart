@@ -1,4 +1,4 @@
-use kiss3d::prelude::*;
+use kiss3d::{camera, prelude::*};
 
 use crate::cartpole::CartPole;
 
@@ -7,45 +7,51 @@ pub mod cartpole;
 #[kiss3d::main]
 async fn main() {
     let mut window = Window::new("Control Lab").await;
-    window.set_background_color(Color::new(0.05, 0.06, 0.09, 1.0));
-    window.set_ambient(0.15);
 
     window.set_shadows_enabled(true);
     window.set_shadow_resolution(2048);
 
-    let mut camera = OrbitCamera3d::default();
+    let mut camera = OrbitCamera3d::new(
+        Vec3 {
+            x: 5.0,
+            y: 5.0,
+            z: 5.0,
+        },
+        Vec3 {
+            x: 0.0,
+            y: 0.0,
+            z: 0.0,
+        },
+    );
+
+    camera.rebind_rotate_button(None);
+    camera.rebind_drag_button(None);
+    camera.rebind_reset_key(None);
+
+    camera.set_projection(camera::Projection::Orthographic);
+
     let mut scene = SceneNode3d::empty();
 
     // Ground plane (shadow receiver).
     scene
         .add_cube(14.0, 0.4, 14.0)
         .set_position(Vec3::new(0.0, -1.0, 0.0))
-        .set_color(Color::new(0.7, 0.7, 0.7, 1.0));
+        .set_color(Color::new(0.91, 1.0, 0.98, 1.0));
 
     // Directional light
     scene
         .add_light(
-            Light::directional(Vec3::new(-0.6, -1.0, -0.3))
-                .with_color(Color::new(1.0, 0.96, 0.85, 1.0))
+            Light::directional(Vec3::new(0.0, -0.5, -0.5))
+                .with_color(Color::new(0.41, 0.51, 0.73, 1.0))
                 .with_intensity(2.5),
         )
-        .set_position(Vec3::new(0.0, 6.0, 0.0));
-
-    // Spot light pointing down at the scene, casting a sharper shadow. `reorient`
-    // aims the node's forward (-Z) vector from the light position toward the floor.
-    scene
-        .add_light(
-            Light::spot(0.35, 0.55, 30.0)
-                .with_color(Color::new(0.8, 0.85, 1.0, 1.0))
-                .with_intensity(12.0),
-        )
-        .reorient(Vec3::new(4.0, 6.0, 4.0), Vec3::ZERO, Vec3::Y);
+        .set_position(Vec3::new(0.0, 10.0, -5.0));
 
     // A non-shadow-casting fill light to lift the ambient look.
     scene
         .add_light(
             Light::point(40.0)
-                .with_color(Color::new(0.3, 0.3, 0.4, 1.0))
+                .with_color(Color::new(0.41, 0.51, 0.73, 1.0))
                 .with_intensity(1.5)
                 .with_casts_shadows(false),
         )
@@ -53,11 +59,11 @@ async fn main() {
 
     // Simulation setup
 
-    // TODO: Probably make the simple thing set itself up in the constructor
+    // TODO: Probably make the simple thing set itself up in the constructor or some serde fun
     let mut cart = CartPole {
         pos: 0.0,       // Start in the middle of the track (meters)
         vel: 0.0,       // Starting stationary
-        theta: 0.1,     // Slight initial tilt (radians, ~5.7 degrees) so it falls
+        theta: 0.5,     // Slight initial tilt (radians, ~5.7 degrees) so it falls
         omega: 0.0,     // Starting with no angular velocity
         force: 0.0,     // No external push applied yet
         gravity: 9.81,  // Earth gravity ($m/s^2$)
