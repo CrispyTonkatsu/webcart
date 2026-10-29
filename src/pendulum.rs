@@ -5,25 +5,58 @@ use kiss3d::{
 
 #[derive(Default)]
 pub struct InvPendulum {
-    x: f64,
-    v: f64,
-    theta: f64,
-    omega: f64,
-    group: SceneNode3d,
+    pub pos: f64,
+    pub vel: f64,
+
+    pub theta: f64,
+    pub omega: f64,
+
+    pub force: f64,
+    pub gravity: f64,
+
+    pub length: f64,
+    pub tip_mass: f64,
+    pub cart_mass: f64,
+
+    pub group: SceneNode3d,
 }
 
 impl InvPendulum {
     pub fn enter_scene(&mut self, scene: &mut SceneNode3d) {
         self.group = scene.add_group();
-        let mut sphere = self.group.add_sphere(0.01);
-        sphere
-            .add_cube(0.1, 1.0, 0.1)
-            .set_position(Vec3::new(0.0, 0.1, 0.0));
 
-        sphere.set_rotation(Quat::from_rotation_x(std::f32::consts::PI / 2.0));
+        self.group.add_sphere(0.5);
+
+        self.group
+            .add_cube(0.1, 2.0, 0.1)
+            .set_position(Vec3::new(0.0, 2.0, 0.0));
     }
 
-    pub fn update(&mut self, delta_time: f64) {}
+    pub fn update(&mut self, delta_time: f64) {
+        // Just for better readability
+        let cos = f64::cos(self.theta);
+        let sin = f64::sin(self.theta);
 
-    pub fn render(&mut self) {}
+        // NOTE: Obtained by solving for \ddot{x}
+        let accel = {
+            (self.force - self.tip_mass * self.length * self.omega.powi(2) * sin
+                + self.tip_mass * self.gravity * sin * cos)
+                / (self.cart_mass + self.tip_mass * sin.powi(2))
+        };
+
+        // NOTE: Obtained by solving for \ddot{\theta}, needs to be done after \ddot{x}
+        let alpha = { (accel * cos + self.gravity * sin) / self.length };
+
+        self.vel += accel * delta_time;
+        self.pos += self.vel * delta_time;
+
+        self.omega += alpha * delta_time;
+        self.theta += self.omega * delta_time;
+    }
+
+    pub fn render(&mut self) {
+        self.group
+            .set_position(Vec3::new(self.pos as f32, 0.0, 0.0))
+            .set_rotation(Quat::from_rotation_z(self.theta as f32));
+    }
 }
