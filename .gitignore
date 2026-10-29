@@ -1,4 +1,5 @@
 /target
+/pkg
 
 # Latex stuff
 *.pdf
