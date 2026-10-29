@@ -4,7 +4,7 @@ use kiss3d::{
 };
 
 #[derive(Default)]
-pub struct InvPendulum {
+pub struct CartPole {
     pub pos: f64,
     pub vel: f64,
 
@@ -18,18 +18,23 @@ pub struct InvPendulum {
     pub tip_mass: f64,
     pub cart_mass: f64,
 
-    pub group: SceneNode3d,
+    pub cart: SceneNode3d,
+    pub pendulum: SceneNode3d,
 }
 
-impl InvPendulum {
+impl CartPole {
     pub fn enter_scene(&mut self, scene: &mut SceneNode3d) {
-        self.group = scene.add_group();
+        self.pendulum = scene.add_group();
 
-        self.group.add_sphere(0.5);
+        self.pendulum.add_sphere(0.1);
 
-        self.group
-            .add_cube(0.1, 2.0, 0.1)
-            .set_position(Vec3::new(0.0, 2.0, 0.0));
+        self.pendulum
+            .add_cube(0.05, self.length as f32, 0.05)
+            .set_position(Vec3::new(0.0, (self.length / 2.0) as f32, 0.0));
+
+        self.cart = scene
+            .add_cube(0.5, 0.2, 0.4)
+            .set_position(Vec3::new(0.0, -0.1, 0.0));
     }
 
     pub fn update(&mut self, delta_time: f64) {
@@ -54,9 +59,12 @@ impl InvPendulum {
         self.theta += self.omega * delta_time;
     }
 
-    pub fn render(&mut self) {
-        self.group
+    pub fn update_visuals(&mut self) {
+        self.pendulum
             .set_position(Vec3::new(self.pos as f32, 0.0, 0.0))
             .set_rotation(Quat::from_rotation_z(self.theta as f32));
+
+        self.cart
+            .set_position(Vec3::new(self.pos as f32, -0.2, 0.0));
     }
 }

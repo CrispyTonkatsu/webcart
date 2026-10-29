@@ -1,8 +1,8 @@
 use kiss3d::prelude::*;
 
-use crate::pendulum::InvPendulum;
+use crate::cartpole::CartPole;
 
-pub mod pendulum;
+pub mod cartpole;
 
 #[kiss3d::main]
 async fn main() {
@@ -54,7 +54,7 @@ async fn main() {
     // Simulation setup
 
     // TODO: Probably make the simple thing set itself up in the constructor
-    let mut pendulum = InvPendulum {
+    let mut cart = CartPole {
         pos: 0.0,       // Start in the middle of the track (meters)
         vel: 0.0,       // Starting stationary
         theta: 0.1,     // Slight initial tilt (radians, ~5.7 degrees) so it falls
@@ -64,10 +64,11 @@ async fn main() {
         length: 1.0,    // Pole length of 1 meter
         tip_mass: 0.1,  // Light tip mass (0.1 kg)
         cart_mass: 1.0, // Heavier cart mass (1.0 kg)
-        group: SceneNode3d::empty(),
+        pendulum: SceneNode3d::empty(),
+        cart: SceneNode3d::empty(),
     };
 
-    pendulum.enter_scene(&mut scene);
+    cart.enter_scene(&mut scene);
 
     let mut last_time = std::time::Instant::now();
     while window.render_3d(&mut scene, &mut camera).await {
@@ -75,7 +76,7 @@ async fn main() {
         let delta_time = now.duration_since(last_time).as_secs_f64();
         last_time = now;
 
-        pendulum.update(delta_time);
-        pendulum.render();
+        cart.update(delta_time);
+        cart.update_visuals();
     }
 }
