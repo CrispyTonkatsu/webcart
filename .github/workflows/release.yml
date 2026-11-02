@@ -1,5 +1,8 @@
 name: WASM Package
 
+permissions:
+  contents: write
+
 on:
   push:
     tags:
