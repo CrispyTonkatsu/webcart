@@ -32,6 +32,6 @@ jobs:
       - name: Create GitHub Release and Upload Asset
         uses: softprops/action-gh-release@v2
         with:
-          files: wasm-pkg.zip
+          files: wasm-pkg.tgz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
