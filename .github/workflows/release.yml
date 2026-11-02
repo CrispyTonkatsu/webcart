@@ -1,4 +1,4 @@
-name: WASM Package Release
+name: WASM Package
 
 on:
   push:
