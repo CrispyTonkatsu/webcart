@@ -3544,6 +3544,7 @@ dependencies = [
  "console_error_panic_hook",
  "kiss3d",
  "rand 0.10.3",
+ "wasm-bindgen",
 ]
 
 [[package]]
