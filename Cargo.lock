@@ -3533,7 +3533,6 @@ version = "0.1.0"
 dependencies = [
  "kiss3d",
  "rand 0.10.3",
- "wasm-bindgen",
 ]
 
 [[package]]
