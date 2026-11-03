@@ -12,4 +12,3 @@ name = "webcart"
 [dependencies]
 kiss3d = "0.47.0"
 rand = "0.10.3"
-wasm-bindgen = "0.2.130"
