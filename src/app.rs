@@ -7,20 +7,17 @@ pub use web_time::Instant;
 #[cfg(not(target_arch = "wasm32"))]
 pub use std::time::Instant;
 
-pub async fn run(canvas: Option<CanvasSetup>) {
-    let mut window = match canvas {
-        Some(canvas) => Window::new_with_setup("Control Lab", 300, 300, canvas).await,
-        None => Window::new("Control Lab").await,
-    };
+pub async fn run() {
+    let mut window = Window::new("Control Lab").await;
 
     window.set_shadows_enabled(true);
     window.set_shadow_resolution(2048);
 
     let mut camera = OrbitCamera3d::new(
         Vec3 {
-            x: 5.0,
-            y: 5.0,
-            z: 5.0,
+            x: 3.0,
+            y: 3.0,
+            z: 3.0,
         },
         Vec3 {
             x: 0.0,
@@ -28,10 +25,6 @@ pub async fn run(canvas: Option<CanvasSetup>) {
             z: 0.0,
         },
     );
-
-    camera.rebind_rotate_button(None);
-    camera.rebind_drag_button(None);
-    camera.rebind_reset_key(None);
 
     camera.set_projection(camera::Projection::Orthographic);
 

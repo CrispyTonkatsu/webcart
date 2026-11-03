@@ -75,6 +75,10 @@ impl CartPole {
     }
 
     pub fn dynamics_update(&mut self, delta_time: f64) {
+        if delta_time > 0.8 {
+            return;
+        }
+
         // Just for better readability
         let cos = f64::cos(self.theta);
         let sin = f64::sin(self.theta);
