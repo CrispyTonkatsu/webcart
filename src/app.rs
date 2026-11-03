@@ -1,6 +1,12 @@
 use crate::cartpole::CartPole;
 use kiss3d::{camera, prelude::*};
 
+#[cfg(target_arch = "wasm32")]
+pub use web_time::Instant;
+
+#[cfg(not(target_arch = "wasm32"))]
+pub use std::time::Instant;
+
 pub async fn run(canvas: Option<CanvasSetup>) {
     let mut window = match canvas {
         Some(canvas) => Window::new_with_setup("Control Lab", 300, 300, canvas).await,
@@ -75,9 +81,9 @@ pub async fn run(canvas: Option<CanvasSetup>) {
 
     cart.enter_scene(&mut scene);
 
-    let mut last_time = std::time::Instant::now();
+    let mut last_time = Instant::now();
     while window.render_3d(&mut scene, &mut camera).await {
-        let now = std::time::Instant::now();
+        let now = Instant::now();
         let delta_time = now.duration_since(last_time).as_secs_f64();
         last_time = now;
 

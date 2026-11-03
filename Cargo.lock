@@ -3545,6 +3545,7 @@ dependencies = [
  "kiss3d",
  "rand 0.10.3",
  "wasm-bindgen",
+ "web-time",
 ]
 
 [[package]]
