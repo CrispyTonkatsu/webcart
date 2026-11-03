@@ -1,8 +1,11 @@
 use crate::cartpole::CartPole;
 use kiss3d::{camera, prelude::*};
 
-pub async fn run() {
-    let mut window = Window::new("Control Lab").await;
+pub async fn run(canvas: Option<CanvasSetup>) {
+    let mut window = match canvas {
+        Some(canvas) => Window::new_with_setup("Control Lab", 300, 300, canvas).await,
+        None => Window::new("Control Lab").await,
+    };
 
     window.set_shadows_enabled(true);
     window.set_shadow_resolution(2048);
