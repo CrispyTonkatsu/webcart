@@ -10,5 +10,6 @@ crate-type = ["cdylib", "rlib"]
 name = "webcart"
 
 [dependencies]
+console_error_panic_hook = "0.1.7"
 kiss3d = "0.47.0"
 rand = "0.10.3"
