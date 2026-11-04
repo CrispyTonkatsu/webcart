@@ -42,6 +42,7 @@
             texliveFull
 
             tombi
+            yaml-language-server
 
             wasm-pack
           ];

@@ -6,7 +6,8 @@ permissions:
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,9 +21,6 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Cache Cargo build artifacts
-        uses: Swatinem/rust-cache@v2
-
       - name: Install wasm-pack
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
@@ -32,9 +30,33 @@ jobs:
       - name: Compress WASM package into tarball
         run: wasm-pack pack engine
 
+      - name: Labelling version
+        id: get_version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "VERSION=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Prepare versioned
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          ORIGINAL_FILE=$(find engine/pkg -name "*.tgz" | head -n 1)
+
+          echo "Found tarball at: $ORIGINAL_FILE"
+
+          cp "$ORIGINAL_FILE" "engine-pkg-${VERSION}.tgz"
+          cp "$ORIGINAL_FILE" "engine-pkg-latest.tgz"
+
+          ls -la engine-pkg-*.tgz
+
       - name: Create GitHub Release and Upload Asset
         uses: softprops/action-gh-release@v2
         with:
-          files: ./engine/pkg/engine-0.1.0.tgz
+          make_latest: true
+          files: |
+            engine-pkg-latest.tgz
+            engine-pkg-${{ steps.get_version.outputs.VERSION }}.tgz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
