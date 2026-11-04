@@ -19,19 +19,12 @@ pub struct CartPole {
 
 #[wasm_bindgen]
 impl CartPole {
-    // TODO: Add a method to apply input to the cart or pole
-
     pub fn apply_cart_impulse(&mut self, impulse: f64) {
         self.vel += impulse;
     }
 
     pub fn apply_tip_impulse(&mut self, impulse: f64) {
         self.omega += impulse;
-    }
-
-    pub fn update(&mut self, delta_time: f64) {
-        self.controller_update();
-        self.dynamics_update(delta_time);
     }
 
     fn controller_update(&mut self) {
@@ -82,5 +75,10 @@ impl CartPole {
 
         self.omega += alpha * delta_time;
         self.theta += self.omega * delta_time;
+    }
+
+    pub fn update(&mut self, delta_time: f64) {
+        self.controller_update();
+        self.dynamics_update(delta_time);
     }
 }

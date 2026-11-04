@@ -5,3 +5,5 @@ edition = "2024"
 
 [dependencies]
 engine = { path = "../engine" }
+kiss3d = "0.47.0"
+rand = "0.10.3"
