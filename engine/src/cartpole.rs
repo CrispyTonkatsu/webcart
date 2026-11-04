@@ -19,6 +19,10 @@ pub struct CartPole {
 
 #[wasm_bindgen]
 impl CartPole {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
     pub fn apply_cart_impulse(&mut self, impulse: f64) {
         self.vel += impulse;
     }

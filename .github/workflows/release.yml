@@ -27,14 +27,14 @@ jobs:
         run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
 
       - name: Build WASM package
-        run: wasm-pack build --target web
+        run: wasm-pack build engine
 
       - name: Compress WASM package into tarball
-        run: tar -czvf wasm-pkg.tgz -C pkg .
+        run: wasm-pack pack engine
 
       - name: Create GitHub Release and Upload Asset
         uses: softprops/action-gh-release@v2
         with:
-          files: wasm-pkg.tgz
+          files: /engine/pkg/wasm-pkg.tgz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
