@@ -13,7 +13,7 @@
 \subsection{Variables}
 Simplifying the problem by treating it as 2 point masses where $c$ is
 the point on the cart and then $p$ is at the other end of the pole.
-The masses are at a ditance $l$ of each other.
+The masses are at a distance $l$ of each other.
 
 The problem needs 2 generalized variables:
 \begin{enumerate}
@@ -70,7 +70,7 @@ The potential energy for the cart is:
 	U = m_pgl\cos(\theta)
 \end{equation}
 
-This leads to the final lagrangian of:
+This leads to the final Lagrangian of:
 \begin{align*}
 	L & = T - U                    \\
 	L & = \frac{1}{2}m_c \dot{x}^2
@@ -134,11 +134,13 @@ To summarize, the equations of motion with respect to displacement $x$ and angle
 	-\ddot{x}l\cos(\theta) + \dot{x}l\dot{\theta}\sin(\theta) + l^2 \ddot(\theta) + \dot{x}l\dot{\theta}\sin(\theta) + g l \sin{\theta} = 0
 \end{align}
 
+% TODO: Add the state space form here:
+
 \section{Simulating the pendulum}
 With the equations of motion, the system is not trivial to simulate compared to
 the Newtonian description of the system.
 
-\subsection{Simplectic Euler Method}
+\subsection{Symplectic Euler Method}
 This method is relatively simple to implement and provides enough stability
 in the system. The discretized version of this method is defined as such:
 \begin{align*}
@@ -148,10 +150,22 @@ in the system. The discretized version of this method is defined as such:
 
 \subsection{Implementation details}
 To simulate the model in a visual context, rust will be used due to its ease of
-setup, ability to compile for native and wasm platforms. For collision detection,
+setup, ability to compile for native and wasm platforms. For collisions,
 I'll be utilizing a brute force broad phase while using GJK to calculate collisions
 between the floor and the pole.
 
-\section{}
+\section{Controlling the pendulum}
+This problem is the fruit fly of control theory, as it is a simple
+non-linear system that allows for applications of both classical
+and modern control. For this problem we ideally want our pendulum to
+be upright and also to stay bounded within a certain region.
+
+\subsection{Linear Quadratic Regulator (LQR)}
+Given our focus in optimal control, it is more adjacent to implement
+an LQR controller than to take the PID approach of classical controls.
+Moreover, this method is also more efficient at controlling Multiple
+Inputs Multiple Outputs. This section will briefly outline LQR control.
+
+% TODO: Left off here explaining the LQR controller
 
 \end{document}
