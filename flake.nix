@@ -21,12 +21,17 @@
           overlays = [ (import rust-overlay) ];
         };
 
-        waylandPackages = with pkgs; [
+        graphicsPackages = with pkgs; [
+          mesa
+
           wayland
           wayland-protocols
+
           vulkan-loader
+          vulkan-tools
 
           libGL
+          libglvnd
 
           libxkbcommon
         ];
@@ -35,20 +40,42 @@
       in
       {
         devShells.default = pkgs.mkShell {
-          packages = with pkgs; [
-            rustToolchain
+          packages =
+            with pkgs;
+            [
+              rustToolchain
+              wasm-pack
 
-            texlab
-            texliveFull
+              # LSPs
+              tombi
+              yaml-language-server
+              basedpyright
+              ruff
 
-            tombi
-            yaml-language-server
+              # Math tools
+              texlab
+              texliveFull
 
-            wasm-pack
-          ];
+              (python3.withPackages (
+                ps: with ps; [
+                  sympy
+                  numpy
+                ]
+              ))
+
+            ]
+            ++ graphicsPackages;
+
+          # Stuff needed for dGPU in cachyOS
+          __EGL_VENDOR_LIBRARY_FILENAMES = "${pkgs.libglvnd}/share/glvnd/egl_vendor.d/10_nvidia.json";
+          WGPU_BACKEND = "vulkan";
+          VK_ICD_FILENAMES = "/usr/share/vulkan/icd.d/nvidia_icd.json";
 
           LD_LIBRARY_PATH =
-            if pkgs.stdenv.hostPlatform.isLinux then pkgs.lib.makeLibraryPath waylandPackages else [ ];
+            if pkgs.stdenv.hostPlatform.isLinux then
+              pkgs.lib.makeLibraryPath graphicsPackages + ":/usr/lib:/usr/lib32"
+            else
+              [ ];
         };
       }
     );

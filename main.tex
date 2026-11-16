@@ -4,130 +4,80 @@
 \newcommand{\pfrac}[2]{\frac{\partial #1}{\partial #2}}
 
 \begin{document}
-\title{Cart pole equations of motion}
+\title{Spherical Inverted Pendulum with LQR Controller}
 \author{Edgar Jose Donoso Mansilla}
 \date{}
 \maketitle
 
-\section{Variables}
-Simplifying the problem by treating it as 2 point masses where $c$ is the point on the cart and then $p$ is at the other end of the pole. The masses are at a ditance $l$ of each other.
+\section{The problem}
+Most people when they are young try to balance a stick with their hand,
+this can be quite simple (provided your stick is long enough) but it
+represents the core of what control theory as a field is trying to do.
 
-The problem needs 2 generalized variables:
-\begin{enumerate}
-	\item The horizontal displacement of the cart: $x$
-	\item The angle to the up axis of the pole: $\theta$
-\end{enumerate}
+This system is fairly complex. This is because it is a Multiple Inputs Multiple
+Outputs(MIMO) system as your hand can move in the $xy$-plane and the pole's
+orientation can be described with angles $\theta, \phi$.
 
-\section{Kinematics}
-Finding the position of the mass at the end of the pole $(x_p, y_p)$:
+This problem isn't immediately applicable to real-world problems but serves as
+the foundation of warehouse robots carrying boxes (remove the fixed point),
+rockets (add thrust), etc.
 
-\begin{equation}
-	x_p = x - l \sin(\theta)
-\end{equation}
+% TODO: Define your variables here
 
-\begin{equation}
-	y_p = l \cos(\theta)
-\end{equation}
+\section{Degrees of freedom}
+As mentioned in the introduction, the cart has the following positional
+degrees of freedom:
+$$
+	\vec{x} =
+	\begin{bmatrix}
+		x \\ y \\ \theta \\ \phi
+	\end{bmatrix}
+$$
 
-Now finding the first order derivative for the kinetic speed:
+There's an additional four degrees of freedom that stem from the
+time derivatives:
+$$
+	\vec{x'} =
+	\begin{bmatrix}
+		x' \\ y' \\ \theta' \\ \phi'
+	\end{bmatrix}
+$$
 
-\begin{equation}
-	\dot{x_p} = \dot{x} - l \dot{\theta} \cos(\theta)
-\end{equation}
+\section{Formulas of energy in the system}
+The system has potential energy just from the angle $\theta$, as it is
+affected by gravity.
 
-\begin{equation}
-	\dot{y_p} = -l \dot{\theta} \sin(\theta)
-\end{equation}
+$$
+	V = m_P gl\cos(\theta)
+$$
 
-\section{Lagrangian}
-The kinetic energy for the cart is:
+On the other hand, the potential energy depends on the cart and the pole
+$$
+	T = T_C + T_P
+$$
+
+Representing the tip's coordinates in terms of $\theta, \phi$:
 \begin{align*}
-	T & = \frac{1}{2}m_c \dot{x}^2 + \frac{1}{2}m_p (\dot{x_p}^2 + \dot{y_p}^2) \\
-	T & = \frac{1}{2}m_c \dot{x}^2
-	+ \frac{1}{2}m_p (
-	\dot{x}^2 - 2\dot{x}l\dot{\theta}\cos(\theta) + l^2 \dot{\theta}^2 \cos^2(\theta)
-	+ l^2 \dot{\theta}^2 \sin^2 (\theta)
-	)
+	x_p & = x_c + l \sin(\theta) \cos(\phi) \\
+	y_p & = y_c + l \sin(\theta) \sin(\phi) \\
+	z_p & = l \cos(\theta)                  \\
 \end{align*}
 
-Simplifying with trigonometric identities:
-\begin{equation}
-	T = \frac{1}{2}m_c \dot{x}^2
-	+ \frac{1}{2}m_p (
-	\dot{x}^2 - 2\dot{x}l\dot{\theta}\cos(\theta) + l^2 \dot{\theta}^2
-	)
-\end{equation}
-
-The potential energy for the cart is:
-\begin{align*}
-	U & = mgy_p
-\end{align*}
-
-\begin{equation}
-	U = m_pgl\cos(\theta)
-\end{equation}
-
-This leads to the final lagrangian of:
-\begin{align*}
-	L & = T - U                    \\
-	L & = \frac{1}{2}m_c \dot{x}^2
-	+ \frac{1}{2}m_p (
-	\dot{x}^2 - 2\dot{x}l\dot{\theta}\cos(\theta) + l^2 \dot{\theta}^2
-	)
-	- m_pgl\cos(\theta)
-\end{align*}
-
-Which simplifies to the following:
-\begin{equation}
-	L = \frac{1}{2}(m_c + m_p)\dot{x}^2
-	- m_p\dot{x}l\dot{\theta}\cos(\theta) + \frac{1}{2} m_p l^2 \dot{\theta}^2
-	- m_pgl\cos(\theta)
-\end{equation}
-
-\section{Euler Lagrange Equation}
-To optimize the energy ledger we have made, we can now use the Euler-Lagrange equation to get the final equation of motion for both $x$ and $\theta$.
-
-With respect to $x$:
+After expanding and solving for the tip's kinetic energy in simpler terms:
 $$
-	\frac{d}{dt} \pfrac{L}{\dot{x}} - \pfrac{L}{x} = \mathbf{F}(t)
+	T = \frac{1}{2}m_c(x'^2 + y'^2) + \frac{1}{2}m_p v_p^2
 $$
 
-\begin{align}
-	\pfrac{L}{\dot{x}}              & = (m_c + m_p)\dot{x} - m_p l \dot{\theta}\cos(\theta)                                    \\
-	\frac{d}{dt} \pfrac{L}{\dot{x}} & = (m_c + m_p)\ddot{x} - m_p l \ddot{\theta}\cos(\theta) + m_pl\dot{\theta}^2\sin(\theta) \\
-	\pfrac{L}{x}                    & = 0
-\end{align}
+Given the terms of $v_p$ are relatively bloated, therefore I'll be using
+python and sympy to get a simpler solution.
 
-\begin{equation}
-	(m_c + m_p)\ddot{x} - m_pl\ddot{\theta}\cos(\theta) + m_pl\dot{\theta}^2\sin(\theta) = \mathbf{F}(t)
-\end{equation}
+\section{Sympy and the Euler-Lagrange}
+As discussed in the last section, the equations blow up in algebraic complexity.
+Therefore, using tools like sympy make the problem less error prone and allows
+us to focus on the system as a whole as opposed to just the algebra dictating motion.
 
-With respect to $\theta$:
-$$
-	\frac{d}{dt} \pfrac{L}{\dot{\theta}} - \pfrac{L}{\theta} = 0
-$$
-
-\begin{align}
-	\pfrac{L}{\dot{\theta}}              & = -m_p\dot{x}l\cos(\theta) + m_p l^2 \dot{\theta}                                         \\
-	\frac{d}{dt} \pfrac{L}{\dot{\theta}} & = -m_p\ddot{x}l\cos(\theta) + m_p\dot{x}l\dot{\theta}\sin(\theta) + m_p l^2 \ddot(\theta) \\
-	\pfrac{L}{\theta}                    & = m_p\dot{x}l\dot{\theta}\sin(\theta) + m_p g l \sin{\theta}
-\end{align}
-
-\begin{equation} \label{ThetaMotion}
-	-m_p\ddot{x}l\cos(\theta) + m_p\dot{x}l\dot{\theta}\sin(\theta) + m_p l^2 \ddot(\theta) + m_p\dot{x}l\dot{\theta}\sin(\theta) + m_p g l \sin{\theta} = 0
-\end{equation}
-
-Equation \eqref{ThetaMotion} can be simplified by dividing the mass out as it is not being influenced by any forces:
-\begin{equation}
-	-\ddot{x}l\cos(\theta) + \dot{x}l\dot{\theta}\sin(\theta) + l^2 \ddot(\theta) + \dot{x}l\dot{\theta}\sin(\theta) + g l \sin{\theta} = 0
-\end{equation}
-
-\section{Summary}
-To summarize, the equations of motion with respect to displacement $x$ and angle $\theta$ are:
-
-\begin{align}
-	(m_c + m_p)\ddot{x} - m_pl\ddot{\theta}\cos(\theta) + m_pl\dot{\theta}^2\sin(\theta) = \mathbf{F}(t) \\
-	-\ddot{x}l\cos(\theta) + \dot{x}l\dot{\theta}\sin(\theta) + l^2 \ddot(\theta) + \dot{x}l\dot{\theta}\sin(\theta) + g l \sin{\theta} = 0
-\end{align}
+Fermat was onto something, "(...) which this margin is too narrow to contain." The python
+code to get the equations used in this model will be in the appendix for those who want to
+see the algebra going underneath (crazy how little math you have to actually do on the job).
 
 \end{document}

@@ -44,7 +44,7 @@ impl CartPoleModel {
         }
     }
 
-    pub fn update(&mut self, delta_time: f64) {
+    pub fn update_controller(&mut self, delta_time: f64) {
         self.simulation.update(delta_time);
     }
 
