@@ -59,3 +59,5 @@ V = m_p * g * l * sp.cos(theta)
 
 LM = mp.LagrangesMethod(T - V, q, force_list, frame=N)
 eom = LM.form_lagranges_equations()
+
+sp.print_latex(eom[0])

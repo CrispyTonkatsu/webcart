@@ -64,7 +64,7 @@
               ))
 
             ]
-            ++ graphicsPackages;
+            ++ (if pkgs.stdenv.isDarwin then [ ] else graphicsPackages);
 
           # Stuff needed for dGPU in cachyOS
           __EGL_VENDOR_LIBRARY_FILENAMES = "${pkgs.libglvnd}/share/glvnd/egl_vendor.d/10_nvidia.json";
