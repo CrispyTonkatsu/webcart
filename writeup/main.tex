@@ -151,8 +151,8 @@ in the system. The discretized version of this method is defined as such:
 \subsection{Implementation details}
 To simulate the model in a visual context, rust will be used due to its ease of
 setup, ability to compile for native and wasm platforms. For collisions,
-I'll be utilizing a brute force broad phase while using GJK to calculate collisions
-between the floor and the pole.
+I'll be utilizing a brute force broad phase while using analytical solutions
+to cylinder sphere collisions for a throwable ball that causes disturbances.
 
 \section{Controlling the pendulum}
 This problem is the fruit fly of control theory, as it is a simple
