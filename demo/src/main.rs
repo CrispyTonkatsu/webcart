@@ -1,19 +1,23 @@
 use std::fs;
 pub use std::time::Instant;
 
-use engine::engine::Engine;
 use kiss3d::{
-    camera::{self, OrbitCamera3d},
+    camera::{OrbitCamera3d, Projection},
     color::Color,
-    event::Key,
+    event::{Action, Key},
     glamx::Vec3,
     light::Light,
     scene::SceneNode3d,
     window::Window,
 };
 
-use crate::cartpolemodel::CartPoleModel;
+use engine::{ball::Ball, engine::Engine};
+use nalgebra::Vector3;
+use rand::random_range;
 
+use crate::{ballmodel::BallModel, cartpolemodel::CartPoleModel};
+
+mod ballmodel;
 mod cartpolemodel;
 
 #[kiss3d::main]
@@ -48,7 +52,7 @@ async fn main() {
         },
     );
 
-    camera.set_projection(camera::Projection::Orthographic);
+    camera.set_projection(Projection::Orthographic);
 
     let mut scene = SceneNode3d::empty();
 
@@ -80,14 +84,33 @@ async fn main() {
     let mut cart_model = CartPoleModel::default();
     cart_model.enter_scene(&mut scene, &sim.cart);
 
+    let mut ball_model = BallModel::default();
+
     let mut last_time = Instant::now();
     while window.render_3d(&mut scene, &mut camera).await {
         let now = Instant::now();
         let delta_time = now.duration_since(last_time).as_secs_f32();
         last_time = now;
 
-        cart_model.update_input(&window, &mut sim.cart);
+        if window.get_key(Key::W) == Action::Press {
+            let ball = Ball {
+                pos: Vector3::<f32>::new(0.0, 4.0, 0.0),
+                vel: Vector3::<f32>::new(0.0, -10.0, 0.0),
+                radius: 0.5,
+                mass: 1.0,
+                ..Ball::default()
+            };
+
+            ball_model.enter_scene(&mut scene, &ball);
+            sim.add_ball(ball);
+        }
+
+        if window.get_key(Key::Space) == Action::Press {
+            sim.cart.apply_tip_impulse(random_range(-1.5..1.5));
+        }
+
         sim.update(delta_time);
         cart_model.update_visuals(&sim.cart);
+        ball_model.update_visuals(sim.ball.as_ref());
     }
 }

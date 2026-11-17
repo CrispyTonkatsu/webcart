@@ -9,6 +9,10 @@ pub struct Engine {
 }
 
 impl Engine {
+    pub fn add_ball(&mut self, ball: Ball) {
+        self.ball = Some(ball);
+    }
+
     pub fn update(&mut self, delta_time: f32) {
         // Updating the cart as regular
         self.cart.update(delta_time);
@@ -16,8 +20,8 @@ impl Engine {
         if let Some(ball) = &mut self.ball {
             ball.update(delta_time);
 
-            let to_tip = self.cart.tip_pos() - ball.pos();
-            let radius_sum = ball.radius() + self.cart.tip_radius();
+            let to_tip = self.cart.tip_pos() - ball.pos;
+            let radius_sum = ball.radius + self.cart.tip_radius();
 
             if to_tip.magnitude() <= radius_sum {
                 println!("Hit");

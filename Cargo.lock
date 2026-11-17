@@ -650,6 +650,7 @@ version = "0.1.0"
 dependencies = [
  "engine",
  "kiss3d",
+ "nalgebra",
  "rand 0.10.3",
  "serde",
  "serde_json",

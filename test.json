@@ -13,6 +13,6 @@
     "tip_mass": 0.001,
     "cart_mass": 1,
 
-    "tip_radius": 10
+    "tip_radius": 0.1
   }
 }

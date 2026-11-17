@@ -93,7 +93,11 @@ impl CartPole {
     }
 
     pub fn tip_pos(&self) -> Vector3<f32> {
-        Vector3::<f32>::new(self.pos, 0.0, 0.0)
+        Vector3::<f32>::new(
+            self.pos - self.length * f32::sin(self.theta),
+            self.length * f32::cos(self.theta),
+            0.0,
+        )
     }
 
     pub fn tip_radius(&self) -> f32 {

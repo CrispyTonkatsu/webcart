@@ -3,23 +3,13 @@ use serde::{Deserialize, Serialize};
 
 use crate::simulatable::Simulatable;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Default)]
 pub struct Ball {
-    pos: Vector3<f32>,
-    vel: Vector3<f32>,
-    net_force: Vector3<f32>,
-    mass: f32,
-    radius: f32,
-}
-
-impl Ball {
-    pub fn pos(&self) -> Vector3<f32> {
-        self.pos
-    }
-
-    pub fn radius(&self) -> f32 {
-        self.radius
-    }
+    pub pos: Vector3<f32>,
+    pub vel: Vector3<f32>,
+    pub net_force: Vector3<f32>,
+    pub mass: f32,
+    pub radius: f32,
 }
 
 impl Simulatable for Ball {
