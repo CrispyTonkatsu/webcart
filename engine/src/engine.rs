@@ -1,3 +1,4 @@
+use nalgebra::Vector2;
 use serde::{Deserialize, Serialize};
 
 use crate::{ball::Ball, cartpole::CartPole, simulatable::Simulatable};
@@ -24,7 +25,15 @@ impl Engine {
             let radius_sum = ball.radius + self.cart.tip_radius();
 
             if to_tip.magnitude() <= radius_sum {
-                println!("Hit");
+                let normal = to_tip.normalize().xy();
+                let tangent =
+                    Vector2::<f32>::new(f32::cos(self.cart.theta()), f32::sin(self.cart.theta()))
+                        .normalize();
+
+                let dot = normal.dot(&tangent);
+                self.cart.apply_tip_impulse(dot);
+
+                // Removing the ball so that the user can check whether it is gone
                 self.ball = None
             }
         }

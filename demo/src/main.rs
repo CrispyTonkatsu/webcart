@@ -20,6 +20,8 @@ use crate::{ballmodel::BallModel, cartpolemodel::CartPoleModel};
 mod ballmodel;
 mod cartpolemodel;
 
+// TODO: Use Serde for the entire stuff including the ball to spawn
+
 #[kiss3d::main]
 async fn main() {
     let contents = fs::read_to_string("./test.json").expect("File not found.");
@@ -95,10 +97,10 @@ async fn main() {
         if window.get_key(Key::W) == Action::Press {
             let ball = Ball {
                 pos: Vector3::<f32>::new(0.0, 4.0, 0.0),
-                vel: Vector3::<f32>::new(0.0, -10.0, 0.0),
-                radius: 0.5,
+                vel: Vector3::<f32>::new(0.0, 0.0, 0.0),
+                net_force: Vector3::<f32>::new(0.0, -9.81, 0.0),
+                radius: 0.2,
                 mass: 1.0,
-                ..Ball::default()
             };
 
             ball_model.enter_scene(&mut scene, &ball);
