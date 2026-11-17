@@ -1,11 +1,11 @@
+use std::fs;
 pub use std::time::Instant;
 
-mod cartpolemodel;
-
-use engine::cartpole::CartPole;
+use engine::engine::Engine;
 use kiss3d::{
     camera::{self, OrbitCamera3d},
     color::Color,
+    event::Key,
     glamx::Vec3,
     light::Light,
     scene::SceneNode3d,
@@ -14,9 +14,23 @@ use kiss3d::{
 
 use crate::cartpolemodel::CartPoleModel;
 
+mod cartpolemodel;
+
 #[kiss3d::main]
 async fn main() {
+    let contents = fs::read_to_string("./test.json").expect("File not found.");
+    let sim = serde_json::from_str::<Engine>(contents.as_str());
+
+    if sim.is_err() {
+        println!("This is so cool");
+        return;
+    }
+
+    let mut sim = sim.unwrap();
+
     let mut window = Window::new("Control Lab").await;
+
+    window.rebind_close_key(Some(Key::Escape));
 
     window.set_shadows_enabled(true);
     window.set_shadow_resolution(2048);
@@ -63,35 +77,17 @@ async fn main() {
         )
         .set_position(Vec3::new(-5.0, 3.0, -5.0));
 
-    // Simulation setup
-
-    // TODO: Probably make the simple thing set itself up in the constructor or some serde fun
-    let mut cart = CartPoleModel {
-        simulation: CartPole {
-            pos: 0.0,       // Start in the middle of the track (meters)
-            vel: 0.0,       // Starting stationary
-            theta: 0.5,     // Slight initial tilt (radians, ~5.7 degrees) so it falls
-            omega: 0.0,     // Starting with no angular velocity
-            force: 0.0,     // No external push applied yet
-            gravity: 9.81,  // Earth gravity ($m/s^2$)
-            length: 1.0,    // Pole length of 1 meter
-            tip_mass: 0.1,  // Light tip mass (0.1 kg)
-            cart_mass: 1.0, // Heavier cart mass (1.0 kg)
-        },
-        pendulum: SceneNode3d::empty(),
-        cart: SceneNode3d::empty(),
-    };
-
-    cart.enter_scene(&mut scene);
+    let mut cart_model = CartPoleModel::default();
+    cart_model.enter_scene(&mut scene, &sim.cart);
 
     let mut last_time = Instant::now();
     while window.render_3d(&mut scene, &mut camera).await {
         let now = Instant::now();
-        let delta_time = now.duration_since(last_time).as_secs_f64();
+        let delta_time = now.duration_since(last_time).as_secs_f32();
         last_time = now;
 
-        cart.input_update(&window);
-        cart.update(delta_time);
-        cart.update_visuals();
+        cart_model.update_input(&window, &mut sim.cart);
+        sim.update(delta_time);
+        cart_model.update_visuals(&sim.cart);
     }
 }

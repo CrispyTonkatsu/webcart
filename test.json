@@ -1,0 +1,18 @@
+{
+  "cart":{
+    "pos": 0,
+    "vel": 0,
+
+    "theta": 0,
+    "omega": 0,
+
+    "force": 0,
+    "gravity": 9.81,
+
+    "length": 2,
+    "tip_mass": 0.001,
+    "cart_mass": 1,
+
+    "tip_radius": 10
+  }
+}

@@ -47,6 +47,7 @@
               wasm-pack
 
               # LSPs
+              vscode-json-languageserver
               tombi
               yaml-language-server
               basedpyright
@@ -67,9 +68,9 @@
             ++ (if pkgs.stdenv.isDarwin then [ ] else graphicsPackages);
 
           # Stuff needed for dGPU in cachyOS
-          __EGL_VENDOR_LIBRARY_FILENAMES = "${pkgs.libglvnd}/share/glvnd/egl_vendor.d/10_nvidia.json";
-          WGPU_BACKEND = "vulkan";
-          VK_ICD_FILENAMES = "/usr/share/vulkan/icd.d/nvidia_icd.json";
+          # __EGL_VENDOR_LIBRARY_FILENAMES = "${pkgs.libglvnd}/share/glvnd/egl_vendor.d/10_nvidia.json";
+          # WGPU_BACKEND = "vulkan";
+          # VK_ICD_FILENAMES = "/usr/share/vulkan/icd.d/nvidia_icd.json";
 
           LD_LIBRARY_PATH =
             if pkgs.stdenv.hostPlatform.isLinux then

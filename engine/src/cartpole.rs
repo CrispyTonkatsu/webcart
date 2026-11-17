@@ -1,33 +1,32 @@
-use wasm_bindgen::prelude::*;
+use nalgebra::Vector3;
+use serde::{Deserialize, Serialize};
 
-#[derive(Default)]
-#[wasm_bindgen]
+use crate::simulatable::Simulatable;
+
+#[derive(Serialize, Deserialize)]
 pub struct CartPole {
-    pub pos: f64,
-    pub vel: f64,
+    pos: f32,
+    vel: f32,
 
-    pub theta: f64,
-    pub omega: f64,
+    theta: f32,
+    omega: f32,
 
-    pub force: f64,
-    pub gravity: f64,
+    force: f32,
+    gravity: f32,
 
-    pub length: f64,
-    pub tip_mass: f64,
-    pub cart_mass: f64,
+    length: f32,
+    tip_mass: f32,
+    cart_mass: f32,
+
+    tip_radius: f32,
 }
 
-#[wasm_bindgen]
 impl CartPole {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    pub fn apply_cart_impulse(&mut self, impulse: f64) {
+    pub fn apply_cart_impulse(&mut self, impulse: f32) {
         self.vel += impulse;
     }
 
-    pub fn apply_tip_impulse(&mut self, impulse: f64) {
+    pub fn apply_tip_impulse(&mut self, impulse: f32) {
         self.omega += impulse;
     }
 
@@ -55,14 +54,14 @@ impl CartPole {
         self.force = position_gain + angle_gain
     }
 
-    fn dynamics_update(&mut self, delta_time: f64) {
+    fn dynamics_update(&mut self, delta_time: f32) {
         if delta_time > 0.8 {
             return;
         }
 
         // Just for better readability
-        let cos = f64::cos(self.theta);
-        let sin = f64::sin(self.theta);
+        let cos = f32::cos(self.theta);
+        let sin = f32::sin(self.theta);
 
         // NOTE: Obtained by solving for \ddot{x}
         let accel = {
@@ -81,7 +80,29 @@ impl CartPole {
         self.theta += self.omega * delta_time;
     }
 
-    pub fn update(&mut self, delta_time: f64) {
+    pub fn pos(&self) -> f32 {
+        self.pos
+    }
+
+    pub fn theta(&self) -> f32 {
+        self.theta
+    }
+
+    pub fn pole_length(&self) -> f32 {
+        self.length
+    }
+
+    pub fn tip_pos(&self) -> Vector3<f32> {
+        Vector3::<f32>::new(self.pos, 0.0, 0.0)
+    }
+
+    pub fn tip_radius(&self) -> f32 {
+        self.tip_radius
+    }
+}
+
+impl Simulatable for CartPole {
+    fn update(&mut self, delta_time: f32) {
         self.controller_update();
         self.dynamics_update(delta_time);
     }

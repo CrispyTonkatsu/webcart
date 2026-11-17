@@ -651,6 +651,8 @@ dependencies = [
  "engine",
  "kiss3d",
  "rand 0.10.3",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -751,6 +753,8 @@ name = "engine"
 version = "0.1.0"
 dependencies = [
  "nalgebra",
+ "serde",
+ "serde_json",
  "wasm-bindgen",
 ]
 
@@ -1738,6 +1742,7 @@ dependencies = [
  "num-complex",
  "num-rational",
  "num-traits",
+ "serde",
  "simba",
  "typenum",
 ]
@@ -1831,6 +1836,7 @@ checksum = "73f88a1307638156682bada9d7604135552957b7818057dcef22705b4d509495"
 dependencies = [
  "bytemuck",
  "num-traits",
+ "serde",
 ]
 
 [[package]]
