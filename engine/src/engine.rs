@@ -27,11 +27,10 @@ impl Engine {
             if to_tip.magnitude() <= radius_sum {
                 let normal = to_tip.normalize().xy();
                 let tangent =
-                    Vector2::<f32>::new(f32::cos(self.cart.theta()), f32::sin(self.cart.theta()))
-                        .normalize();
+                    Vector2::<f32>::new(f32::cos(self.cart.theta()), f32::sin(self.cart.theta()));
 
                 let dot = normal.dot(&tangent);
-                self.cart.apply_tip_impulse(dot);
+                self.cart.apply_tip_impulse(-dot);
 
                 // Removing the ball so that the user can check whether it is gone
                 self.ball = None

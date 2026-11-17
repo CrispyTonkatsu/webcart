@@ -2,7 +2,7 @@ use std::fs;
 pub use std::time::Instant;
 
 use kiss3d::{
-    camera::{OrbitCamera3d, Projection},
+    camera::{Camera3d, OrbitCamera3d, Projection},
     color::Color,
     event::{Action, Key},
     glamx::Vec3,
@@ -95,10 +95,15 @@ async fn main() {
         last_time = now;
 
         if window.get_key(Key::W) == Action::Press {
+            let cam_pos = camera.eye();
+            let cam_pos = Vector3::<f32>::new(cam_pos.x, cam_pos.y, cam_pos.z);
+
+            let ball_dir = (sim.cart.tip_pos() - cam_pos).normalize() * 20.0;
+
             let ball = Ball {
-                pos: Vector3::<f32>::new(0.0, 4.0, 0.0),
-                vel: Vector3::<f32>::new(0.0, 0.0, 0.0),
-                net_force: Vector3::<f32>::new(0.0, -9.81, 0.0),
+                pos: cam_pos,
+                vel: Vector3::<f32>::new(ball_dir.x, ball_dir.y, ball_dir.z),
+                net_force: Vector3::<f32>::new(0.0, 0.0, 0.0),
                 radius: 0.2,
                 mass: 1.0,
             };
